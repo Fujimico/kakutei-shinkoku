@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確定申告ナビ｜年金世帯 × マイナンバーカード（2025年分）</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f5f0e8;
+    --cream: #ede7d9;
+    --accent: #c0392b;
+    --gold: #b8860b;
+    --muted: #7a7265;
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --border: #c8bfad;
+    --blue: #1a5276;
+    --blue-light: #d6eaf8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(184,134,11,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(192,57,43,0.05) 0%, transparent 60%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--accent), var(--gold));
+  }
+  header h1 { font-family: 'Noto Serif JP', serif; font-size: 1.5rem; font-weight: 700; letter-spacing: 0.05em; }
+  header p { font-size: 0.8rem; color: #a09880; margin-top: 4px; letter-spacing: 0.08em; }
+  .year-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 2px;
+    margin-right: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CONTAINER ── */
+  .container { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  /* ── PHASE INDICATOR ── */
+  .phase-wrap { display: flex; align-items: flex-start; gap: 0; margin-bottom: 36px; }
+  .phase-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .phase-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cream); border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 500; color: var(--muted);
+    transition: all 0.3s; flex-shrink: 0;
+  }
+  .phase-dot.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .phase-dot.done { background: var(--green); border-color: var(--green); color: white; }
+  .phase-line { flex: 1; height: 2px; background: var(--border); transition: background 0.3s; }
+  .phase-line.done { background: var(--green); }
+  .phase-label { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+
+  /* ── SECTION ── */
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .card {
+    background: white; border: 1px solid var(--border); border-radius: 4px;
+    padding: 28px 32px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(26,26,46,0.06);
+  }
+  .card-title {
+    font-family: 'Noto Serif JP', serif; font-size: 1.1rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
+  }
+  .card-title .num {
+    width: 24px; height: 24px; background: var(--ink); color: var(--paper);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-family: 'Noto Sans JP', sans-serif; flex-shrink: 0;
+  }
+  .card-subtitle { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; padding-left: 34px; }
+
+  /* ── CHECK GRID ── */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-left: 34px; }
+  @media (max-width: 500px) { .check-grid { grid-template-columns: 1fr; } }
+
+  .check-item {
+    border: 1.5px solid var(--border); border-radius: 4px; padding: 12px 14px;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: flex-start;
+    gap: 10px; background: var(--paper);
+  }
+  .check-item:hover { border-color: var(--gold); background: #fdfaf3; }
+  .check-item.checked { border-color: var(--ink); background: white; box-shadow: inset 0 0 0 1px var(--ink); }
+  .check-box {
+    width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 2px;
+    flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; transition: all 0.2s;
+  }
+  .check-item.checked .check-box { background: var(--ink); border-color: var(--ink); color: white; }
+  .check-label { font-size: 0.85rem; line-height: 1.5; }
+  .check-note { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── DEDUCTION DETAIL ── */
+  .deduct-item {
+    border: 1.5px solid var(--border); border-radius: 4px; overflow: hidden;
+    margin-bottom: 10px; background: var(--paper); transition: border-color 0.2s;
+  }
+  .deduct-item.checked { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); background: white; }
+  .deduct-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; cursor: pointer;
+  }
+  .deduct-header:hover { background: #fdfaf3; }
+  .deduct-item.checked .deduct-header { background: white; }
+  .deduct-label { font-size: 0.88rem; font-weight: 500; flex: 1; }
+  .deduct-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .expand-btn {
+    font-size: 0.72rem; color: var(--blue); border: 1px solid var(--blue-light);
+    background: var(--blue-light); padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+  }
+  .expand-btn:hover { background: var(--blue); color: white; }
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel {
+    display: none; border-top: 1px solid var(--border);
+    padding: 16px 16px 16px 44px; background: #fafafa;
+    font-size: 0.82rem; line-height: 1.8; color: #333;
+  }
+  .detail-panel.open { display: block; }
+  .detail-panel h4 { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 12px 0 6px; }
+  .detail-panel h4:first-child { margin-top: 0; }
+  .detail-panel table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 0.8rem; }
+  .detail-panel th { background: var(--cream); padding: 6px 10px; text-align: left; font-weight: 600; border: 1px solid var(--border); font-size: 0.75rem; }
+  .detail-panel td { padding: 6px 10px; border: 1px solid var(--border); vertical-align: top; }
+  .detail-panel a { color: var(--blue); text-decoration: none; border-bottom: 1px solid var(--blue-light); }
+  .detail-panel a:hover { border-bottom-color: var(--blue); }
+  .formula { background: var(--cream); border-left: 3px solid var(--gold); padding: 8px 12px; border-radius: 0 3px 3px 0; font-family: monospace; font-size: 0.82rem; margin: 8px 0; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout { border-radius: 3px; padding: 12px 16px; font-size: 0.8rem; line-height: 1.7; margin: 12px 0; }
+  .callout-warn { background: #fff8e1; border-left: 3px solid var(--gold); color: #5a4a00; }
+  .callout-info { background: var(--green-light); border-left: 3px solid var(--green); color: #1a3d2b; }
+  .callout-red { background: #fdf0ee; border-left: 3px solid var(--accent); color: #5a1a14; }
+  .callout-blue { background: var(--blue-light); border-left: 3px solid var(--blue); color: #0d2e47; }
+
+  /* ── BUTTONS ── */
+  .btn { display: inline-block; padding: 12px 28px; border-radius: 3px; font-size: 0.88rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; letter-spacing: 0.04em; }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { background: #2d2d4e; }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); margin-right: 10px; }
+  .btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
+  .btn-area { padding-left: 34px; margin-top: 24px; display: flex; align-items: center; }
+
+  /* ── STEPS ── */
+  .step-list { padding-left: 34px; }
+  .step { display: flex; gap: 16px; position: relative; }
+  .step:not(:last-child)::after { content: ''; position: absolute; left: 12px; top: 28px; width: 2px; height: calc(100% - 4px); background: var(--border); }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--paper); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; color: var(--muted); flex-shrink: 0; z-index: 1; }
+  .step-body { padding-bottom: 24px; flex: 1; }
+  .step-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; line-height: 1.5; }
+  .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── PREP LIST ── */
+  .prep-list { list-style: none; margin: 10px 0 0 34px; }
+  .prep-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.84rem; padding: 8px 0; border-bottom: 1px solid var(--cream); line-height: 1.6; }
+  .prep-list li:last-child { border-bottom: none; }
+  .prep-list .icon { flex-shrink: 0; width: 20px; text-align: center; }
+  .prep-list .optional { font-size: 0.7rem; background: var(--cream); color: var(--muted); padding: 1px 6px; border-radius: 2px; margin-left: 6px; white-space: nowrap; }
+
+  /* ── SUMMARY ── */
+  .summary-box { background: var(--cream); border: 1px solid var(--border); border-radius: 4px; padding: 16px 20px; margin: 16px 0 20px 34px; }
+  .summary-box h4 { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .tag { display: inline-block; background: var(--ink); color: var(--paper); font-size: 0.72rem; padding: 2px 10px; border-radius: 20px; margin: 2px 4px 2px 0; }
+  .tag.green { background: var(--green); }
+
+  /* ── RESULT ── */
+  .result-header { text-align: center; padding: 40px 20px 28px; }
+  .result-icon { font-size: 3rem; margin-bottom: 12px; }
+  .result-header h2 { font-family: 'Noto Serif JP', serif; font-size: 1.4rem; margin-bottom: 8px; }
+  .result-header p { font-size: 0.85rem; color: var(--muted); }
+
+  .disclaimer { font-size: 0.72rem; color: var(--muted); text-align: center; margin-top: 40px; padding: 16px; border-top: 1px solid var(--border); line-height: 1.8; }
+
+  code { background: var(--cream); padding: 2px 6px; border-radius: 2px; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="year-badge">2025年分</span>確定申告ナビゲーター</h1>
+  <p>年金世帯 × マイナンバーカード（e-Tax）対応 ／ 申告期限：2026年3月16日（月）</p>
+</header>
+
+<div class="container">
+
+  <!-- PHASE -->
+  <div class="phase-wrap">
+    <div class="phase-item"><div class="phase-dot active" id="dot1">1</div><div class="phase-label">収入源</div></div>
+    <div class="phase-line" id="line1"></div>
+    <div class="phase-item"><div class="phase-dot" id="dot2">2</div><div class="phase-label">控除</div></div>
+    <div class="phase-line" id="line2"></div>
+    <div class="phase-item"><div class="phase-dot" id="dot3">3</div><div class="phase-label">準備物</div></div>
+    <div class="phase-line" id="line3"></div>
+    <div class="phase-item"><div class="phase-dot" id="dot4">4</div><div class="phase-label">手順</div></div>
+    <div class="phase-line" id="line4"></div>
+    <div class="phase-item"><div class="phase-dot" id="dot5">✓</div><div class="phase-label">完了</div></div>
+  </div>
+
+  <!-- ===== SECTION 1: 収入源 ===== -->
+  <div class="section active" id="section1">
+    <div class="card">
+      <div class="card-title"><span class="num">1</span>収入源を選んでください</div>
+      <div class="card-subtitle">該当するものをすべてチェック（複数OK）</div>
+      <div class="check-grid">
+        <div class="check-item" data-id="nenkin-kosei" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">厚生年金・国民年金</div><div class="check-note">公的年金（老齢・遺族・障害）</div></div>
+        </div>
+        <div class="check-item" data-id="nenkin-kigyou" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">企業年金・個人年金</div><div class="check-note">厚生年金基金・確定拠出年金等</div></div>
+        </div>
+        <div class="check-item" data-id="kyuyo" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">給与・パート収入</div><div class="check-note">アルバイトを含む</div></div>
+        </div>
+        <div class="check-item" data-id="fudosan" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">不動産収入</div><div class="check-note">賃貸・駐車場など</div></div>
+        </div>
+        <div class="check-item" data-id="kabushiki" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">株・配当・投資信託</div><div class="check-note">特定口座以外、または申告分離</div></div>
+        </div>
+        <div class="check-item" data-id="hoken" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">保険金・一時金</div><div class="check-note">生命保険の満期・解約返戻金等</div></div>
+        </div>
+      </div>
+      <div class="callout callout-info" style="margin:16px 0 0 34px;">
+        💡 <strong>年金だけで400万円以下・他の所得が20万円以下</strong>なら原則として確定申告は不要です。ただし医療費控除や生命保険料控除で<strong>還付を受けたい場合は申告した方がお得</strong>です。
+      </div>
+      <div class="btn-area">
+        <button class="btn btn-primary" onclick="goTo(2)">次へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: 控除 ===== -->
+  <div class="section" id="section2">
+    <div class="card">
+      <div class="card-title"><span class="num">2</span>控除の該当項目を選んでください</div>
+      <div class="card-subtitle">チェックで選択 ／「詳細・計算方法」で控除の内容を確認できます</div>
+
+      <!-- 医療費控除 -->
+      <div class="deduct-item" id="di-iryou">
+        <div class="deduct-header" onclick="toggleDeduct('iryou', event)">
+          <div class="check-box" id="cb-iryou">✓</div>
+          <div style="flex:1">
+            <div class="deduct-label">医療費控除</div>
+            <div class="deduct-sub">年間10万円超（または所得の5%超）</div>
+          </div>
+          <span class="expand-btn" onclick="toggleDetail('iryou', event)">詳細・計算方法</span>
+        </div>
+        <div class="detail-panel" id="dp-iryou">
+          <h4>📌 何が控除できる？</h4>
+          <p>自分・生計を同じくする家族の医療費が対象。<strong>支払いの実費（out of pocket）が基準</strong>で、健康保険で補填された分は差し引く。</p>
+          <div class="formula">控除額 = 年間の医療費合計 − 保険補填額 − 10万円（※所得200万円未満は所得×5%）</div>
+          <h4>✅ 対象になるもの</h4>
+          <table>
+            <tr><th>種類</th><th>具体例</th></tr>
+            <tr><td>診察・治療費</td><td>病院・歯科・接骨院（治療目的）</td></tr>
+            <tr><td>薬代</td><td>処方薬・市販薬（治療目的）</td></tr>
+            <tr><td>介護費用</td><td>居宅介護サービスの自己負担分</td></tr>
+            <tr><td>交通費</td><td>通院のための電車・バス代（タクシーは緊急時のみ）</td></tr>
+          </table>
+          <h4>❌ 対象外</h4>
+          <p>健康診断・予防接種・美容目的の施術・入院中の食事代（差額ベッド代は対象）</p>
+          <h4>🔗 公式情報</h4>
+          <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm" target="_blank">国税庁：医療費控除の対象となる医療費（No.1120）</a></p>
+        </div>
+      </div>
+
+      <!-- 生命保険料控除 -->
+      <div class="deduct-item" id="di-seimei">
+        <div class="deduct-header" onclick="toggleDeduct('seimei', event)">
+          <div class="check-box" id="cb-seimei">✓</div>
+          <div style="flex:1">
+            <div class="deduct-label">生命保険料控除</div>
+            <div class="deduct-sub">一般・介護医療・個人年金の3区分</div>
+          </div>
+          <span class="expand-btn" onclick="toggleDetail('seimei', event)">詳細・計算方法</span>
+        </div>
+        <div class="detail-panel" id="dp-seimei">
+          <h4>📌 概要</h4>
+          <p>支払った保険料に応じて所得から控除。3区分（一般・介護医療・個人年金）それぞれに最大4万円（所得税）、合計最大12万円。</p>
+          <div class="formula">控除額（新契約・各区分）：<br>
+保険料 ≤ 20,000円 → 全額<br>
+20,001〜40,000円 → 保険料×½ + 10,000円<br>
+40,001〜80,000円 → 保険料×¼ + 20,000円<br>
+80,001円〜 → 一律 40,000円</div>
+          <h4>📋 証明書の見方</h4>
+          <p>保険会社から送付される「控除証明書」に「控除証明額」が記載されている。その金額を上の計算式に当てはめる（e-Taxの画面で自動計算される）。</p>
+          <h4>🔗 公式情報</h4>
+          <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm" target="_blank">国税庁：生命保険料控除（No.1140）</a></p>
+        </div>
+      </div>
+
+      <!-- ふるさと納税・寄附金 -->
+      <div class="deduct-item" id="di-furusato">
+        <div class="deduct-header" onclick="toggleDeduct('furusato', event)">
+          <div class="check-box" id="cb-furusato">✓</div>
+          <div style="flex:1">
+            <div class="deduct-label">寄附金控除（ふるさと納税ほか）</div>
+            <div class="deduct-sub">政治献金・認定NPO・ふるさと納税</div>
+          </div>
+          <span class="expand-btn" onclick="toggleDetail('furusato', event)">詳細・計算方法</span>
+        </div>
+        <div class="detail-panel" id="dp-furusato">
+          <h4>📌 ふるさと納税の場合</h4>
+          <p><strong>ワンストップ特例を使った場合は確定申告不要</strong>（5自治体以内かつ他に確定申告不要な人）。<br>それ以外、または他の理由で確定申告する人は寄附金全額を申告する。</p>
+          <div class="formula">控除額 = 寄附金合計 − 2,000円</div>
+          <h4>⚠️ ワンストップ特例を使ったのに確定申告する場合</h4>
+          <p>ワンストップ特例の効力が失われるため、<strong>必ず確定申告書にふるさと納税を含めて全額記入</strong>すること。</p>
+          <h4>🔗 公式情報</h4>
+          <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1150.htm" target="_blank">国税庁：寄附金控除（No.1150）</a></p>
+        </div>
+      </div>
+
+      <!-- 障害者控除 -->
+      <div class="deduct-item" id="di-shougai">
+        <div class="deduct-header" onclick="toggleDeduct('shougai', event)">
+          <div class="check-box" id="cb-shougai">✓</div>
+          <div style="flex:1">
+            <div class="deduct-label">障害者控除</div>
+            <div class="deduct-sub">本人または扶養家族が該当</div>
+          </div>
+          <span class="expand-btn" onclick="toggleDetail('shougai', event)">詳細・計算方法</span>
+        </div>
+        <div class="detail-panel" id="dp-shougai">
+          <h4>📌 控除額</h4>
+          <table>
+            <tr><th>区分</th><th>控除額（所得税）</th></tr>
+            <tr><td>一般障害者</td><td>27万円</td></tr>
+            <tr><td>特別障害者</td><td>40万円</td></tr>
+            <tr><td>同居特別障害者</td><td>75万円</td></tr>
+          </table>
+          <h4>✅ 対象</h4>
+          <p>身体障害者手帳・精神障害者保健福祉手帳・療育手帳の交付を受けている人、または65歳以上で市区町村から障害者認定を受けている人。</p>
+          <h4>🔗 公式情報</h4>
+          <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1160.htm" target="_blank">国税庁：障害者控除（No.1160）</a></p>
+        </div>
+      </div>
+
+      <!-- 配偶者控除 -->
+      <div class="deduct-item" id="di-haiguu">
+        <div class="deduct-header" onclick="toggleDeduct('haiguu', event)">
+          <div class="check-box" id="cb-haiguu">✓</div>
+          <div style="flex:1">
+            <div class="deduct-label">配偶者控除・配偶者特別控除</div>
+            <div class="deduct-sub">配偶者の所得が133万円以下</div>
+          </div>
+          <span class="expand-btn" onclick="toggleDetail('haiguu', event)">詳細・計算方法</span>
+        </div>
+        <div class="detail-panel" id="dp-haiguu">
+          <h4>📌 2種類ある</h4>
+          <table>
+            <tr><th>区分</th><th>配偶者の所得</th><th>控除額（本人所得900万円以下の場合）</th></tr>
+            <tr><td>配偶者控除</td><td>48万円以下</td><td>38万円（70歳以上は48万円）</td></tr>
+            <tr><td>配偶者特別控除</td><td>48万円超〜133万円以下</td><td>所得に応じて1〜38万円</td></tr>
+          </table>
+          <h4>🧮 「所得」と「収入」の違い（年金受給者の場合）</h4>
+          <p>年金の「収入」から「公的年金等控除」を引いた額が「所得」。<br>
+          例：年金収入 <strong>158万円</strong>（65歳以上）→ 控除110万円 → <strong>所得48万円</strong>（ちょうど配偶者控除の上限）</p>
+          <h4>⚠️ 本人側の所得制限</h4>
+          <p>控除を受ける本人の合計所得が<strong>1,000万円超の場合は適用不可</strong>。</p>
+          <h4>🔗 公式情報</h4>
+          <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm" target="_blank">国税庁：配偶者控除（No.1191）</a>　／　<a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm" target="_blank">配偶者特別控除（No.1195）</a></p>
+        </div>
+      </div>
+
+      <!-- 住宅ローン控除 -->
+      <div class="deduct-item" id="di-shakkin">
+        <div class="deduct-header" onclick="toggleDeduct('shakkin', event)">
+          <div class="check-box" id="cb-shakkin">✓</div>
+          <div style="flex:1">
+            <div class="deduct-label">住宅ローン控除</div>
+            <div class="deduct-sub">残り控除年数がある場合</div>
+          </div>
+          <span class="expand-btn" onclick="toggleDetail('shakkin', event)">詳細・計算方法</span>
+        </div>
+        <div class="detail-panel" id="dp-shakkin">
+          <h4>📌 概要</h4>
+          <p>住宅ローン残高の0.7%が税額控除（所得控除ではなく税金そのものが減る）。最大13年間。</p>
+          <div class="formula">控除税額 = 年末ローン残高 × 0.7%（上限あり）</div>
+          <h4>📋 2年目以降の手続き</h4>
+          <p>年末残高証明書の金額を入力するだけ。計算はe-Taxが自動で行う。初年度のみ確定申告必須（2年目以降は年末調整でも可だが、年金受給者は確定申告で申請）。</p>
+          <h4>⚠️ 年金受給者の注意点</h4>
+          <p>税額控除なので、そもそも所得税・住民税が少ない場合は控除しきれないことがある。住民税からも一部控除可能だが、年金収入のみの場合は上限に注意。</p>
+          <h4>🔗 公式情報</h4>
+          <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1213.htm" target="_blank">国税庁：住宅ローン控除（No.1213）</a></p>
+        </div>
+      </div>
+
+      <div class="btn-area">
+        <button class="btn btn-secondary" onclick="goTo(1)">← 戻る</button>
+        <button class="btn btn-primary" onclick="goTo(3)">次へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: 準備物 ===== -->
+  <div class="section" id="section3">
+    <div class="card">
+      <div class="card-title"><span class="num">3</span>必要書類を準備する</div>
+      <div class="card-subtitle">選んだ収入・控除に基づいて表示しています</div>
+      <div class="summary-box">
+        <h4>選択内容</h4>
+        <div id="summary-tags">—</div>
+      </div>
+      <div style="font-size:0.82rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;padding-left:34px;margin-bottom:8px;">必須</div>
+      <ul class="prep-list">
+        <li><span class="icon">🪪</span><span>マイナンバーカード（ICチップ読み取り用）</span></li>
+        <li><span class="icon">💻</span><span>スマートフォン または ICカードリーダー付きPC</span></li>
+      </ul>
+      <div id="prep-income-section" style="display:none;margin-top:16px;">
+        <div style="font-size:0.82rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;padding-left:34px;margin-bottom:8px;">収入関連</div>
+        <ul class="prep-list" id="prep-income"></ul>
+      </div>
+      <div id="prep-deduct-section" style="display:none;margin-top:16px;">
+        <div style="font-size:0.82rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;padding-left:34px;margin-bottom:8px;">控除関連</div>
+        <ul class="prep-list" id="prep-deduct"></ul>
+      </div>
+      <div class="callout callout-info" style="margin:16px 34px 0;">
+        📮 <strong>公的年金の源泉徴収票</strong>は1月下旬〜2月に日本年金機構から郵送。届いていない場合は「ねんきんネット」または年金事務所（0570-05-1165）で再発行可。
+      </div>
+      <div class="btn-area">
+        <button class="btn btn-secondary" onclick="goTo(2)">← 戻る</button>
+        <button class="btn btn-primary" onclick="goTo(4)">手順を見る →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: 手順 ===== -->
+  <div class="section" id="section4">
+    <div class="card">
+      <div class="card-title"><span class="num">4</span>e-Tax（スマホ）申告の手順</div>
+      <div class="card-subtitle">マイナンバーカード方式 ／ スマートフォンで完結できます</div>
+      <div class="callout callout-warn" style="margin:0 0 20px 34px;">
+        ⏰ <strong>申告期限：2026年3月16日（月）</strong>　e-Taxなら深夜送信も可
+      </div>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">マイナポータルアプリを準備する</div>
+            <div class="step-desc">
+              スマホに「マイナポータル」アプリをインストール。カードをかざして動作確認。<br>
+              パスワードを2種類確認しておく：
+              <div class="callout callout-red" style="margin-top:8px;">
+                🔑 <strong>①利用者証明用電子証明書</strong>：数字4桁（カード読み取り時）<br>
+                🔑 <strong>②署名用電子証明書</strong>：英数字6〜16桁（最終送信時）<br>
+                ※3回間違えるとロック → 市区町村窓口でロック解除が必要
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">確定申告書等作成コーナーへアクセス</div>
+            <div class="step-desc">
+              <code>https://www.keisan.nta.go.jp/</code><br>
+              スマホからアクセス → 「作成開始」→「スマホを使ってe-Tax」を選択。<br>
+              ※ID・パスワード方式は2025年10月に新規発行停止。マイナンバーカードが必要です。
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">マイナンバーカードでログイン・自動連携を確認</div>
+            <div class="step-desc">
+              マイナポータルアプリが起動 → カードをスマホにかざしてNFC読み取り。
+              <div class="callout callout-info" style="margin-top:8px;">
+                💡 <strong>マイナポータル連携</strong>が設定済みの場合、公的年金の源泉徴収情報・生命保険料控除証明等が自動入力される。事前にマイナポータルの「連携済み機関」を確認しておくと時短。
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">収入・所得を入力する</div>
+            <div class="step-desc" id="step4-desc">
+              書類を見ながら各収入を入力してください。
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">各控除を入力する</div>
+            <div class="step-desc" id="step5-desc">
+              選択した控除に応じて入力フォームが表示されます。
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">還付口座・住所を確認して送信</div>
+            <div class="step-desc">
+              還付がある場合は振込先口座（<strong>本人名義</strong>）を入力。<br>
+              内容確認 →「署名用電子証明書」パスワード（英数字）を入力してカードを再読み取り → 送信。
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <div class="step-title">受信通知を確認・保存</div>
+            <div class="step-desc">
+              送信完了後に「受付番号」が表示される。スクリーンショットまたはPDF保存を推奨。<br>
+              還付金は申告から<strong>約3〜4週間</strong>で振込（e-Tax申告の方が書面より早い）。
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="extra-notes"></div>
+      <div class="btn-area">
+        <button class="btn btn-secondary" onclick="goTo(3)">← 戻る</button>
+        <button class="btn btn-primary" onclick="goTo(5)">完了 ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5: 完了 ===== -->
+  <div class="section" id="section5">
+    <div class="card">
+      <div class="result-header">
+        <div class="result-icon">🎌</div>
+        <h2>ナビゲーション完了</h2>
+        <p>申告書を提出したら、受付番号を必ず保存してください</p>
+      </div>
+      <div class="callout callout-info">
+        ✅ <strong>提出後のチェックポイント</strong><br>
+        ・マイナポータル「お知らせ」に受付完了通知が届く<br>
+        ・還付がある場合：登録口座に3〜4週間で振込<br>
+        ・納税がある場合：2026年3月16日（月）までに振替納税・ペイ払い等で納付
+      </div>
+      <div class="callout callout-warn" style="margin-top:16px;">
+        📝 <strong>来年に向けて</strong>：医療費の領収書は年間まとめて保管。マイナポータルの連携機関を増やしておくと来年の入力がほぼ自動になる。
+      </div>
+      <div class="callout callout-blue" style="margin-top:16px;">
+        📞 <strong>困ったときは</strong>：国税庁 確定申告相談センター <strong>0570-00-5901</strong>（音声ガイダンス後、確定申告を選択）<br>
+        または <a href="https://www.nta.go.jp/" target="_blank" style="color:var(--blue);">国税庁ホームページ</a> の「タックスアンサー」が便利。
+      </div>
+      <div class="btn-area" style="justify-content:center;">
+        <button class="btn btn-secondary" onclick="restart()">最初からやり直す</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    このナビゲーターは情報提供を目的としており、税務アドバイスではありません。<br>
+    複雑なケース（不動産・株式の損益通算等）は税理士または最寄りの税務署へご相談ください。<br>
+    ※2025年分（令和7年分）の情報に基づいています。
+  </div>
+</div>
+
+<script>
+  const state = { income: new Set(), deduct: new Set() };
+  const checkedDeducts = new Set();
+
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+    const id = el.dataset.id;
+    state.income.has(id) ? state.income.delete(id) : state.income.add(id);
+  }
+
+  function toggleDeduct(id, e) {
+    // クリックが expand-btn からなら無視
+    if (e && e.target.classList.contains('expand-btn')) return;
+    const item = document.getElementById('di-' + id);
+    const cb = document.getElementById('cb-' + id);
+    item.classList.toggle('checked');
+    if (item.classList.contains('checked')) {
+      state.deduct.add(id);
+      cb.style.background = 'var(--ink)';
+      cb.style.borderColor = 'var(--ink)';
+      cb.style.color = 'white';
+    } else {
+      state.deduct.delete(id);
+      cb.style.background = '';
+      cb.style.borderColor = '';
+      cb.style.color = '';
+    }
+  }
+
+  function toggleDetail(id, e) {
+    e.stopPropagation();
+    const dp = document.getElementById('dp-' + id);
+    dp.classList.toggle('open');
+    const btn = e.target;
+    btn.textContent = dp.classList.contains('open') ? '閉じる' : '詳細・計算方法';
+  }
+
+  function goTo(n) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section' + n).classList.add('active');
+    updatePhase(n);
+    if (n === 3) buildPrep();
+    if (n === 4) buildSteps();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updatePhase(n) {
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.getElementById('dot' + i);
+      dot.classList.remove('active', 'done');
+      if (i < n) dot.classList.add('done');
+      if (i === n) dot.classList.add('active');
+    }
+    for (let i = 1; i <= 4; i++) {
+      const line = document.getElementById('line' + i);
+      line.classList.toggle('done', i < n);
+    }
+  }
+
+  const incomeLabels = {
+    'nenkin-kosei':'公的年金', 'nenkin-kigyou':'企業・個人年金',
+    'kyuyo':'給与・パート', 'fudosan':'不動産収入',
+    'kabushiki':'株・配当', 'hoken':'保険金・一時金'
+  };
+  const deductLabels = {
+    'iryou':'医療費控除', 'seimei':'生命保険料控除',
+    'furusato':'寄附金控除', 'shougai':'障害者控除',
+    'haiguu':'配偶者控除', 'shakkin':'住宅ローン控除'
+  };
+
+  function buildPrep() {
+    const tags = document.getElementById('summary-tags');
+    let html = '';
+    state.income.forEach(id => html += `<span class="tag">${incomeLabels[id]}</span>`);
+    state.deduct.forEach(id => html += `<span class="tag green">${deductLabels[id]}</span>`);
+    tags.innerHTML = html || '<span style="color:var(--muted);font-size:0.82rem;">未選択</span>';
+
+    const incomeMap = {
+      'nenkin-kosei': [{icon:'📄', text:'公的年金等の源泉徴収票（日本年金機構から1月下旬に郵送）'}],
+      'nenkin-kigyou': [{icon:'📄', text:'企業年金・個人年金の源泉徴収票または支払調書'}],
+      'kyuyo': [{icon:'📄', text:'給与所得の源泉徴収票（勤務先から発行）'}],
+      'fudosan': [
+        {icon:'📊', text:'家賃収入の振込明細・通帳コピー（年間集計）'},
+        {icon:'📑', text:'経費の領収書（修繕費・管理費・固定資産税等）', optional:true}
+      ],
+      'kabushiki': [
+        {icon:'📄', text:'年間取引報告書（証券会社から送付または電子交付）'},
+        {icon:'📄', text:'配当の支払通知書', optional:true}
+      ],
+      'hoken': [
+        {icon:'📄', text:'保険金・解約返戻金の支払通知書'},
+        {icon:'📄', text:'払込保険料の証明書（一時所得計算用）'}
+      ]
+    };
+    const deductMap = {
+      'iryou': [
+        {icon:'🧾', text:'医療費の領収書（または医療費通知書）'},
+        {icon:'📋', text:'医療費控除の明細書（作成コーナーで自動作成可）', optional:true}
+      ],
+      'seimei': [{icon:'📬', text:'生命保険料控除証明書（各保険会社から10〜11月に郵送）'}],
+      'furusato': [
+        {icon:'📬', text:'寄附金受領証明書（各自治体から発行）'},
+        {icon:'📝', text:'※ワンストップ特例を使った場合でも確定申告する際は全寄附先の証明書が必要', optional:true}
+      ],
+      'shougai': [{icon:'📄', text:'障害者手帳または市区町村の障害者認定書類のコピー'}],
+      'haiguu': [{icon:'📄', text:'配偶者の収入証明書（年金通知書・源泉徴収票等）'}],
+      'shakkin': [
+        {icon:'📬', text:'住宅借入金等特別控除の年末残高証明書（金融機関から郵送）'},
+        {icon:'📄', text:'（初年度のみ）確定申告書・建物登記事項証明書等', optional:true}
+      ]
+    };
+
+    let incHtml = '';
+    state.income.forEach(id => (incomeMap[id]||[]).forEach(i => {
+      incHtml += `<li><span class="icon">${i.icon}</span><span>${i.text}${i.optional?'<span class="optional">参考</span>':''}</span></li>`;
+    }));
+    let dedHtml = '';
+    state.deduct.forEach(id => (deductMap[id]||[]).forEach(i => {
+      dedHtml += `<li><span class="icon">${i.icon}</span><span>${i.text}${i.optional?'<span class="optional">注意</span>':''}</span></li>`;
+    }));
+
+    document.getElementById('prep-income').innerHTML = incHtml;
+    document.getElementById('prep-income-section').style.display = state.income.size > 0 ? 'block' : 'none';
+    document.getElementById('prep-deduct').innerHTML = dedHtml;
+    document.getElementById('prep-deduct-section').style.display = state.deduct.size > 0 ? 'block' : 'none';
+  }
+
+  function buildSteps() {
+    let s4 = '';
+    if (state.income.has('nenkin-kosei'))
+      s4 += '<strong>公的年金：</strong>源泉徴収票の「支払金額」を入力。65歳以上は最低110万円（65歳未満60万円）の公的年金等控除が自動計算される。<br>';
+    if (state.income.has('nenkin-kigyou'))
+      s4 += '<strong>企業・個人年金：</strong>雑所得として入力。支払金額から払込保険料（必要経費）を差し引いた額が課税対象。<br>';
+    if (state.income.has('kyuyo'))
+      s4 += '<strong>給与・パート：</strong>源泉徴収票の「支払金額」を入力。給与所得控除が自動計算される。<br>';
+    if (state.income.has('fudosan'))
+      s4 += '<strong>不動産収入：</strong>収入合計から経費（修繕費・管理費・減価償却等）を差し引いて不動産所得を計算して入力。<br>';
+    if (state.income.has('kabushiki'))
+      s4 += '<strong>株・配当：</strong>申告分離課税で入力。損失がある場合は損益通算が可能（要確認）。<br>';
+    if (state.income.has('hoken'))
+      s4 += '<strong>保険金・一時金：</strong>一時所得として（受取額 − 払込保険料 − 50万円）÷ 2 が課税対象。<br>';
+    document.getElementById('step4-desc').innerHTML = s4 || '書類を見ながら収入を入力してください。';
+
+    let s5 = '';
+    if (state.deduct.has('iryou'))
+      s5 += `<div class="callout callout-info" style="margin-bottom:8px;">💊 <strong>医療費控除</strong>：領収書を合計して「医療費控除の明細書」を作成。<strong>記入するのは支払った実費（out of pocket）</strong>で、健保の給付金・高額療養費・生命保険からの補填は差し引く。医療費通知（健保組合発行）があれば明細書作成が楽になる。</div>`;
+    if (state.deduct.has('seimei'))
+      s5 += `<div class="callout callout-info" style="margin-bottom:8px;">🏥 <strong>生命保険料控除</strong>：証明書の「控除証明額」を入力。一般・介護医療・個人年金の3区分で各最大4万円。マイナポータル連携で自動入力される場合あり。</div>`;
+    if (state.deduct.has('furusato'))
+      s5 += `<div class="callout callout-warn" style="margin-bottom:8px;">🏯 <strong>ふるさと納税</strong>：ワンストップ特例を使った自治体がある場合も、確定申告する際は<strong>全寄附先を申告書に記入</strong>（ワンストップ特例の効力が消える）。</div>`;
+    if (state.deduct.has('haiguu'))
+      s5 += `<div class="callout callout-info" style="margin-bottom:8px;">👫 <strong>配偶者控除</strong>：配偶者の「所得」（年金収入ではなく、控除後の金額）を入力。65歳以上の年金収入158万円以下なら所得48万円以下となり配偶者控除の対象。</div>`;
+    if (state.deduct.has('shakkin'))
+      s5 += `<div class="callout callout-info" style="margin-bottom:8px;">🏠 <strong>住宅ローン控除</strong>：年末残高証明書の金額を入力するだけ。控除税額は自動計算。</div>`;
+    document.getElementById('step5-desc').innerHTML = s5 || '書類を見ながら各控除の金額を入力してください。';
+
+    let extra = '';
+    if (state.income.has('fudosan') || state.income.has('kabushiki'))
+      extra += `<div class="callout callout-red" style="margin:16px 34px 0;">⚠️ <strong>複雑なケースに注意</strong>：不動産所得・株式の損益通算は入力項目が多くミスが出やすい。不安な場合は税務署の無料相談（要予約）または税理士への相談を推奨。</div>`;
+    document.getElementById('extra-notes').innerHTML = extra;
+  }
+
+  function restart() {
+    state.income.clear(); state.deduct.clear();
+    document.querySelectorAll('.check-item').forEach(el => el.classList.remove('checked'));
+    ['iryou','seimei','furusato','shougai','haiguu','shakkin'].forEach(id => {
+      const item = document.getElementById('di-' + id);
+      const cb = document.getElementById('cb-' + id);
+      if (item) { item.classList.remove('checked'); cb.style.cssText = ''; }
+      const dp = document.getElementById('dp-' + id);
+      if (dp) dp.classList.remove('open');
+    });
+    goTo(1);
+  }
+</script>
+</body>
+</html>
