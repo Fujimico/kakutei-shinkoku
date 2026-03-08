@@ -237,11 +237,15 @@
       <div class="check-grid">
         <div class="check-item" data-id="nenkin-kosei" onclick="toggleCheck(this)">
           <div class="check-box">✓</div>
-          <div><div class="check-label">厚生年金・国民年金</div><div class="check-note">公的年金（老齢・遺族・障害）</div></div>
+          <div><div class="check-label">厚生年金・国民年金</div><div class="check-note">主に老齢年金など課税対象の公的年金</div></div>
         </div>
         <div class="check-item" data-id="nenkin-kigyou" onclick="toggleCheck(this)">
           <div class="check-box">✓</div>
-          <div><div class="check-label">企業年金・個人年金</div><div class="check-note">厚生年金基金・確定拠出年金等</div></div>
+          <div><div class="check-label">企業年金</div><div class="check-note">厚生年金基金・確定給付企業年金など（公的年金等として扱う場合あり）</div></div>
+        </div>
+        <div class="check-item" data-id="nenkin-kojin" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div><div class="check-label">個人年金</div><div class="check-note">生命保険会社の個人年金保険など（公的年金等以外の雑所得）</div></div>
         </div>
         <div class="check-item" data-id="kyuyo" onclick="toggleCheck(this)">
           <div class="check-box">✓</div>
@@ -260,8 +264,14 @@
           <div><div class="check-label">保険金・一時金</div><div class="check-note">生命保険の満期・解約返戻金等</div></div>
         </div>
       </div>
-      <div class="callout callout-info" style="margin:16px 0 0 34px;">
+      <div class="callout callout-info" style="margin:12px 0 0 34px;">
+        💡 <strong>遺族年金・障害年金は原則として非課税</strong>です。通常はここで収入として入力しません。
+      </div>
+      <div class="callout callout-info" style="margin:8px 0 0 34px;">
         💡 <strong>年金だけで400万円以下・他の所得が20万円以下</strong>なら原則として確定申告は不要です。ただし医療費控除や生命保険料控除で<strong>還付を受けたい場合は申告した方がお得</strong>です。
+      </div>
+      <div class="callout callout-warn" style="margin:8px 0 0 34px;">
+        ⚠️ 所得税の確定申告が不要でも、<strong>住民税の申告が必要になる場合</strong>があります。お住まいの市区町村にご確認ください。
       </div>
       <div class="btn-area">
         <button class="btn btn-primary" onclick="goTo(2)">次へ →</button>
@@ -296,9 +306,10 @@
             <tr><td>薬代</td><td>処方薬・市販薬（治療目的）</td></tr>
             <tr><td>介護費用</td><td>居宅介護サービスの自己負担分</td></tr>
             <tr><td>交通費</td><td>通院のための電車・バス代（タクシーは緊急時のみ）</td></tr>
+            <tr><td>入院費用</td><td>病院に支払う入院中の食事代など</td></tr>
           </table>
           <h4>❌ 対象外</h4>
-          <p>健康診断・予防接種・美容目的の施術・入院中の食事代（差額ベッド代は対象）</p>
+          <p>健康診断（異常が見つからず治療につながらないもの）・予防接種・美容目的の施術・本人や家族の都合による差額ベッド代・入院時の身の回り品代</p>
           <h4>🔗 公式情報</h4>
           <p><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm" target="_blank">国税庁：医療費控除の対象となる医療費（No.1120）</a></p>
         </div>
@@ -389,12 +400,12 @@
           <h4>📌 2種類ある</h4>
           <table>
             <tr><th>区分</th><th>配偶者の所得</th><th>控除額（本人所得900万円以下の場合）</th></tr>
-            <tr><td>配偶者控除</td><td>48万円以下</td><td>38万円（70歳以上は48万円）</td></tr>
-            <tr><td>配偶者特別控除</td><td>48万円超〜133万円以下</td><td>所得に応じて1〜38万円</td></tr>
+            <tr><td>配偶者控除</td><td>58万円以下</td><td>38万円（70歳以上は48万円）</td></tr>
+            <tr><td>配偶者特別控除</td><td>58万円超〜133万円以下</td><td>所得に応じて1〜38万円</td></tr>
           </table>
           <h4>🧮 「所得」と「収入」の違い（年金受給者の場合）</h4>
           <p>年金の「収入」から「公的年金等控除」を引いた額が「所得」。<br>
-          例：年金収入 <strong>158万円</strong>（65歳以上）→ 控除110万円 → <strong>所得48万円</strong>（ちょうど配偶者控除の上限）</p>
+          例：年金収入 <strong>168万円</strong>（65歳以上）→ 控除110万円 → <strong>所得58万円</strong>（配偶者控除の上限の目安）</p>
           <h4>⚠️ 本人側の所得制限</h4>
           <p>控除を受ける本人の合計所得が<strong>1,000万円超の場合は適用不可</strong>。</p>
           <h4>🔗 公式情報</h4>
@@ -414,8 +425,8 @@
         </div>
         <div class="detail-panel" id="dp-shakkin">
           <h4>📌 概要</h4>
-          <p>住宅ローン残高の0.7%が税額控除（所得控除ではなく税金そのものが減る）。最大13年間。</p>
-          <div class="formula">控除税額 = 年末ローン残高 × 0.7%（上限あり）</div>
+          <p>近年入居分では、住宅ローン年末残高等の<strong>0.7%</strong>を基に計算する税額控除です（所得控除ではなく税金そのものが減る）。<strong>控除期間や上限額は、入居年と住宅の種類によって異なります。</strong></p>
+          <div class="formula">控除税額 = 年末ローン残高等 × 0.7%（控除期間・上限は入居年と住宅区分で異なる）</div>
           <h4>📋 2年目以降の手続き</h4>
           <p>年末残高証明書の金額を入力するだけ。計算はe-Taxが自動で行う。初年度のみ確定申告必須（2年目以降は年末調整でも可だが、年金受給者は確定申告で申請）。</p>
           <h4>⚠️ 年金受給者の注意点</h4>
@@ -495,7 +506,7 @@
             <div class="step-desc">
               <code>https://www.keisan.nta.go.jp/</code><br>
               スマホからアクセス → 「作成開始」→「スマホを使ってe-Tax」を選択。<br>
-              ※ID・パスワード方式は2025年10月に新規発行停止。マイナンバーカードが必要です。
+              ID・パスワード方式は2025年10月1日から新規発行停止。ただし、すでに届出済みの人は引き続き利用できます。これから初めてe-Taxを使う人は、マイナンバーカード方式が基本です。
             </div>
           </div>
         </div>
@@ -652,7 +663,7 @@
   }
 
   const incomeLabels = {
-    'nenkin-kosei':'公的年金', 'nenkin-kigyou':'企業・個人年金',
+    'nenkin-kosei':'公的年金', 'nenkin-kigyou':'企業年金', 'nenkin-kojin':'個人年金',
     'kyuyo':'給与・パート', 'fudosan':'不動産収入',
     'kabushiki':'株・配当', 'hoken':'保険金・一時金'
   };
@@ -671,7 +682,8 @@
 
     const incomeMap = {
       'nenkin-kosei': [{icon:'📄', text:'公的年金等の源泉徴収票（日本年金機構から1月下旬に郵送）'}],
-      'nenkin-kigyou': [{icon:'📄', text:'企業年金・個人年金の源泉徴収票または支払調書'}],
+      'nenkin-kigyou': [{icon:'📄', text:'企業年金の源泉徴収票または支払通知書（区分を確認すること）'}],
+      'nenkin-kojin': [{icon:'📄', text:'個人年金保険の支払調書または支払通知書（払込保険料の記録も必要）'}],
       'kyuyo': [{icon:'📄', text:'給与所得の源泉徴収票（勤務先から発行）'}],
       'fudosan': [
         {icon:'📊', text:'家賃収入の振込明細・通帳コピー（年間集計）'},
@@ -724,7 +736,9 @@
     if (state.income.has('nenkin-kosei'))
       s4 += '<strong>公的年金：</strong>源泉徴収票の「支払金額」を入力。65歳以上は最低110万円（65歳未満60万円）の公的年金等控除が自動計算される。<br>';
     if (state.income.has('nenkin-kigyou'))
-      s4 += '<strong>企業・個人年金：</strong>雑所得として入力。支払金額から払込保険料（必要経費）を差し引いた額が課税対象。<br>';
+      s4 += '<strong>企業年金：</strong>公的年金等として扱われる場合があります。源泉徴収票や支払通知書の区分を確認し、e-Taxの案内に従って入力してください。<br>';
+    if (state.income.has('nenkin-kojin'))
+      s4 += '<strong>個人年金（生命保険会社）：</strong>通常「公的年金等以外の雑所得」として入力。受け取った年金額から、その年金額に対応する払込保険料を差し引いて計算します。<br>';
     if (state.income.has('kyuyo'))
       s4 += '<strong>給与・パート：</strong>源泉徴収票の「支払金額」を入力。給与所得控除が自動計算される。<br>';
     if (state.income.has('fudosan'))
@@ -743,7 +757,7 @@
     if (state.deduct.has('furusato'))
       s5 += `<div class="callout callout-warn" style="margin-bottom:8px;">🏯 <strong>ふるさと納税</strong>：ワンストップ特例を使った自治体がある場合も、確定申告する際は<strong>全寄附先を申告書に記入</strong>（ワンストップ特例の効力が消える）。</div>`;
     if (state.deduct.has('haiguu'))
-      s5 += `<div class="callout callout-info" style="margin-bottom:8px;">👫 <strong>配偶者控除</strong>：配偶者の「所得」（年金収入ではなく、控除後の金額）を入力。65歳以上の年金収入158万円以下なら所得48万円以下となり配偶者控除の対象。</div>`;
+      s5 += `<div class="callout callout-info" style="margin-bottom:8px;">👫 <strong>配偶者控除</strong>：配偶者の「所得」（年金収入ではなく、控除後の金額）を入力。2025年分は所得58万円以下が配偶者控除の目安。65歳以上の年金収入168万円以下なら所得58万円以下となる。</div>`;
     if (state.deduct.has('shakkin'))
       s5 += `<div class="callout callout-info" style="margin-bottom:8px;">🏠 <strong>住宅ローン控除</strong>：年末残高証明書の金額を入力するだけ。控除税額は自動計算。</div>`;
     document.getElementById('step5-desc').innerHTML = s5 || '書類を見ながら各控除の金額を入力してください。';
